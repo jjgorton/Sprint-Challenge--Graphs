@@ -48,6 +48,7 @@ while len(unexplored) > 0:
         # is room also current room?
     if direction is not None and room is player.current_room: 
         player.travel(direction[0])
+        traversal_path.append(direction[0])
         # add to path and add connections
         path.append(direction[0])
 
@@ -61,7 +62,9 @@ while len(unexplored) > 0:
         while graph.check_for_unexplored(player.current_room.id) is None:
             # may need to add an if path is not empty ---------------?
             if len(path) > 0:
-                player.travel(graph.reverse(path.pop()))
+                backtrack = graph.reverse(path.pop())
+                player.travel(backtrack)
+                traversal_path.append(backtrack)
             else:
                 break
     # should I move to room here ------------?
@@ -73,7 +76,7 @@ while len(unexplored) > 0:
         if player.current_room not in unexplored:
             unexplored.append(player.current_room)
 
-print(len(visited))
+# print(len(visited))
 
 
 # unexplored = []
