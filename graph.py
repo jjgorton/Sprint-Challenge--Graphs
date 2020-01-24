@@ -9,18 +9,33 @@ class Graph:
 
 
     def add_connection(self, prev_room, cur_room, direction):
-        opp_dir = ''
+        # opp_dir = ''
         if direction == 'n':
-            opp_dir = 's'
+            # opp_dir = 's'
+            self.rooms[cur_room]['s'] = prev_room
         elif direction == 's':
-            opp_dir = 'n'
+            # opp_dir = 'n'
+            self.rooms[cur_room]['n'] = prev_room
         elif direction == 'w':
-            opp_dir == 'e'
+            # opp_dir == 'e'
+            self.rooms[cur_room]['e'] = prev_room
         elif direction == 'e':
-            opp_dir = 'w'
+            # opp_dir = 'w'
+            self.rooms[cur_room]['w'] = prev_room
 
         self.rooms[prev_room][direction] = cur_room
-        self.rooms[cur_room][opp_dir] = prev_room
+        # self.rooms[cur_room][opp_dir] = prev_room
+
+    def check_for_unexplored(self, room_id):
+        unexplored = []
+        for door in self.rooms[room_id]:
+            if self.rooms[room_id][door] == '?':
+                unexplored.append(door)
+
+        if len(unexplored) > 0:
+            return unexplored
+        else:
+            return None
 
 
     def bfs_paths(self, room_id):
@@ -82,26 +97,32 @@ class Graph:
         breath-first order.
         """
         # Create a queue/stack as appropriate
-        queue = Queue()
+        queue = list()
         # Put the starting point in that
         # Enstack a list to use as our path
-        queue.enqueue([starting_vertex])
+        queue.append([starting_vertex])
         # Make a set to keep track of where we've been
         visited = set()
+        path = []
         # While there is stuff in the queue/stack
-        while queue.size() > 0:
+        while len(queue) > 0:
         #    Pop the first item
-            path = queue.dequeue()
-            vertex = path[-1]
+            node_list = queue.pop(0)
+            vertex = node_list[-1]
         #    If not visited
             if vertex not in visited:
-                if vertex == '?':
+                for key in self.rooms[vertex]:
+                    if self.rooms[vertex][key] == '?':
                     # Do the thing!
-                    return path
-                visited.add(vertex)
+                        print(f'bfs: {path}')
+                        return path
         #       For each edge in the item
-                for next_vert in self.get_neighbors(vertex):
+                for next_vert in self.rooms[vertex]:
+                    if self.rooms[vertex][next_vert] not in visited:
                 # Copy path to avoid pass by reference bug
-                    new_path = list(path) # Make a copy of path rather than reference
-                    new_path.append(next_vert)
-                    queue.enqueue(new_path)
+                        new_node_list = list(node_list) # Make a copy of path rather than reference
+                        path.append(next_vert)
+                        new_node_list.append(self.rooms[vertex][next_vert])
+                        queue.append(new_node_list)
+                visited.add(vertex)
+                print(f'vertex: {vertex}, next vert: {next_vert}, visited: {visited}')

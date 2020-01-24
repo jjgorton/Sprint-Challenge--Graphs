@@ -30,8 +30,6 @@ player = Player(world.starting_room)
 # traversal_path = ['n', 'n']
 traversal_path = []
 graph = Graph()
-# stack = list()
-# stack.append(player.current_room)
 unexplored = []
 visited = set()
 
@@ -48,8 +46,6 @@ for way in graph.rooms[player.current_room.id]:
 direction = exits[random.randint(0, len(exits)-1)]
 
 while len(unexplored) > 0:
-
-
     # Move to new room
     player.travel(direction)
     traversal_path.append(direction)
@@ -70,15 +66,27 @@ while len(unexplored) > 0:
     for way in graph.rooms[player.current_room.id]:
         if graph.rooms[player.current_room.id][way] == '?':
             unexplored.append(way)
-        if len(unexplored) > 0:
-            direction = unexplored[0]
-        else:
-            #BFS for '?'
-            print('dead end')
+    if len(unexplored) > 0:
+        direction = unexplored[0]
+    else:
+        #BFS for '?'
+        to_new_route = graph.bfs(player.current_room.id)
+        print(f'dead end {traversal_path}')
+        if to_new_route is not None:
+            for direction in to_new_route:
+                player.travel(direction)
+                traversal_path.append(direction)
+            prev_room = player.current_room
+            for way in graph.rooms[player.current_room.id]:
+                if graph.rooms[player.current_room.id][way] == '?':
+                    unexplored.append(way)
+            if len(unexplored) > 0:
+                direction = unexplored[0]
+            
     
     print(graph.rooms)
-        #add_connections will need previous room and direction
-        #travel in a random available direction
+    
+print(traversal_path)
 
 
 # TRAVERSAL TEST
