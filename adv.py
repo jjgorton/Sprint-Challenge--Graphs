@@ -1,6 +1,7 @@
 from room import Room
 from player import Player
 from world import World
+from graph import Graph
 
 import random
 from ast import literal_eval
@@ -28,7 +29,113 @@ player = Player(world.starting_room)
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
 traversal_path = []
+graph = Graph()
 
+unexplored = []
+unexplored.append(player.current_room)
+visited = set()
+# prev_room = None
+path = []
+while len(unexplored) > 0:
+    room = unexplored[-1] # -----------------?
+    if room.id not in visited:
+        graph.add_room(room.id, room.get_exits())
+    
+    visited.add(room.id)
+
+    # move to unexplored room
+    direction = graph.check_for_unexplored(room.id)
+        # is room also current room?
+    if direction is not None and room is player.current_room: 
+        player.travel(direction[0])
+        traversal_path.append(direction[0])
+        # add to path and add connections
+        path.append(direction[0])
+
+        if player.current_room.id not in visited:
+            graph.add_room(player.current_room.id, player.current_room.get_exits())
+            visited.add(player.current_room.id)
+        graph.add_connection(room.id, player.current_room.id, direction[0])
+        # should reasign room---------------?
+    else:
+        # reverse path til direction is not none
+        while graph.check_for_unexplored(player.current_room.id) is None:
+            # may need to add an if path is not empty ---------------?
+            if len(path) > 0:
+                backtrack = graph.reverse(path.pop())
+                player.travel(backtrack)
+                traversal_path.append(backtrack)
+            else:
+                break
+    # should I move to room here ------------?
+    if graph.check_for_unexplored(room.id) is None:
+        unexplored.pop()
+
+    if graph.check_for_unexplored(player.current_room.id) is not None: 
+        #no duplicates
+        if player.current_room not in unexplored:
+            unexplored.append(player.current_room)
+
+# print(len(visited))
+
+
+# unexplored = []
+# visited = set()
+
+# # initialize with first room:
+# room = player.current_room
+# prev_room = room
+# exits = room.get_exits()
+# graph.add_room(room.id, exits)
+# visited.add(room)
+# for way in graph.rooms[player.current_room.id]:
+#     if graph.rooms[room.id][way] == '?':
+#         unexplored.append(way)
+
+# direction = exits[random.randint(0, len(exits)-1)]
+
+# while len(unexplored) > 0:
+#     # Move to new room
+#     player.travel(direction)
+#     traversal_path.append(direction)
+
+#     room = player.current_room
+#     exits = room.get_exits()
+
+#     if room not in visited:
+#         graph.add_room(room.id, exits)
+#         visited.add(room)
+
+#     if prev_room is not None: # checks for first time only
+#         graph.add_connection(prev_room.id, room.id, direction)
+#     prev_room = room
+
+#     # reset for next loop
+#     unexplored = []
+#     for way in graph.rooms[player.current_room.id]:
+#         if graph.rooms[player.current_room.id][way] == '?':
+#             unexplored.append(way)
+#     if len(unexplored) > 0:
+#         direction = unexplored[0]
+#     else:
+#         #BFS for '?'
+#         to_new_route = graph.bfs(player.current_room.id)
+#         print(f'dead end {traversal_path}')
+#         if to_new_route is not None:
+#             for direction in to_new_route:
+#                 player.travel(direction)
+#                 traversal_path.append(direction)
+#             prev_room = player.current_room
+#             for way in graph.rooms[player.current_room.id]:
+#                 if graph.rooms[player.current_room.id][way] == '?':
+#                     unexplored.append(way)
+#             if len(unexplored) > 0:
+#                 direction = unexplored[0]
+            
+    
+#     print(graph.rooms)
+    
+# print(traversal_path)
 
 
 # TRAVERSAL TEST
@@ -51,12 +158,12 @@ else:
 #######
 # UNCOMMENT TO WALK AROUND
 #######
-player.current_room.print_room_description(player)
-while True:
-    cmds = input("-> ").lower().split(" ")
-    if cmds[0] in ["n", "s", "e", "w"]:
-        player.travel(cmds[0], True)
-    elif cmds[0] == "q":
-        break
-    else:
-        print("I did not understand that command.")
+# player.current_room.print_room_description(player)
+# while True:
+#     cmds = input("-> ").lower().split(" ")
+#     if cmds[0] in ["n", "s", "e", "w"]:
+#         player.travel(cmds[0], True)
+#     elif cmds[0] == "q":
+#         break
+#     else:
+#         print("I did not understand that command.")
