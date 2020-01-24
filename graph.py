@@ -7,24 +7,42 @@ class Graph:
         for direction in exits:
             self.rooms[room_id][direction] = '?'
 
+    def reverse(self, direction):
+        if direction == 'n':
+            return 's'
+        if direction == 's':
+            return 'n'
+        if direction == 'e':
+            return 'w'
+        if direction == 'w':
+            return 'e'
+        else:
+            print('not a valid direction')
 
     def add_connection(self, prev_room, cur_room, direction):
-        # opp_dir = ''
-        if direction == 'n':
-            # opp_dir = 's'
-            self.rooms[cur_room]['s'] = prev_room
-        elif direction == 's':
-            # opp_dir = 'n'
-            self.rooms[cur_room]['n'] = prev_room
-        elif direction == 'w':
-            # opp_dir == 'e'
-            self.rooms[cur_room]['e'] = prev_room
-        elif direction == 'e':
-            # opp_dir = 'w'
-            self.rooms[cur_room]['w'] = prev_room
+        # # opp_dir = ''
+        # if direction == 'n':
+        #     # opp_dir = 's'
+        #     # print(direction)
+        #     self.rooms[cur_room]['s'] = prev_room
+        #     # print(f'{cur_room}: {self.rooms[cur_room]}')
+        #     # print(f'graph {self.rooms}')
+        # elif direction == 's':
+        #     # opp_dir = 'n'
+        #     # print(direction)
+        #     self.rooms[cur_room]['n'] = prev_room
+        # elif direction == 'w':
+        #     # opp_dir == 'e'
+        #     # print(direction)
+        #     self.rooms[cur_room]['e'] = prev_room
+        # elif direction == 'e':
+        #     # opp_dir = 'w'
+        #     # print(direction)
+        #     self.rooms[cur_room]['w'] = prev_room
 
         self.rooms[prev_room][direction] = cur_room
-        # self.rooms[cur_room][opp_dir] = prev_room
+        self.rooms[cur_room][self.reverse(direction)] = prev_room
+        # print(self.rooms)
 
     def check_for_unexplored(self, room_id):
         unexplored = []
